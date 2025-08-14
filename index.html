@@ -6,131 +6,25 @@
 <title>Happy Birthday to Tien Anh</title>
 <style>
     html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
+        margin: 0; padding: 0; height: 100%;
         overflow: hidden;
+        background: radial-gradient(ellipse at bottom, #002f61 0%, #001327 100%);
         font-family: 'Comic Sans MS', cursive, sans-serif;
-        background: radial-gradient(ellipse at bottom, #001f3f 0%, #001020 100%);
     }
     canvas {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%; z-index: 0;
     }
     h1 {
+        position: relative;
+        text-align: center;
         color: white;
         font-size: 2.5em;
-        text-align: center;
         margin-top: 20vh;
-        animation: glow 2s infinite alternate, floatIn 1.2s ease-out;
         text-shadow: 0 0 10px #9ed8ff, 0 0 20px #9ed8ff;
+        animation: glow 2s infinite alternate;
         z-index: 2;
-        position: relative;
     }
     @keyframes glow {
         from { text-shadow: 0 0 5px #9ed8ff, 0 0 10px #9ed8ff; }
-        to { text-shadow: 0 0 20px #fff, 0 0 40px #9ed8ff; }
-    }
-    @keyframes floatIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    #petals {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-    }
-    .petal {
-        position: absolute;
-        background: radial-gradient(circle at 40% 40%, #fff 0%, #e8f6ff 60%, #c9ebff 100%);
-        border-radius: 50% 50% 50% 50%;
-        width: 20px;
-        height: 20px;
-        opacity: 0.8;
-        animation: fall linear forwards;
-    }
-    @keyframes fall {
-        to { transform: translateY(110vh) rotate(360deg); }
-    }
-</style>
-</head>
-<body>
-    <canvas id="stars"></canvas>
-    <h1>🌠 Happy Birthday to Tien Anh 🌠</h1>
-    <div id="petals"></div>
-    <audio id="bgm" src="iasmine.mp3" autoplay loop></audio>
-
-<script>
-// --- Sao băng + nền sao ---
-const canvas = document.getElementById('stars');
-const ctx = canvas.getContext('2d');
-let W, H;
-function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener('resize', resize);
-
-let stars = Array.from({length: 150}, () => ({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: Math.random() * 1.5,
-    o: Math.random()
-}));
-
-let streaks = [];
-function spawnStreak() {
-    streaks.push({
-        x: Math.random()*W, y: Math.random()*H*0.5,
-        len: Math.random()*80+50, speed: Math.random()*4+2, life: 1
-    });
-    setTimeout(spawnStreak, Math.random()*3000+2000);
-}
-spawnStreak();
-
-function drawStars() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#9ed8ff';
-    stars.forEach(s => {
-        ctx.globalAlpha = s.o;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-        ctx.fill();
-    });
-    streaks.forEach(s => {
-        ctx.strokeStyle = `rgba(158,216,255,${s.life})`;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(s.x, s.y);
-        ctx.lineTo(s.x - s.len, s.y + s.len*0.2);
-        ctx.stroke();
-        s.x += s.speed;
-        s.y -= s.speed*0.2;
-        s.life -= 0.01;
-    });
-    streaks = streaks.filter(s => s.life > 0);
-    requestAnimationFrame(drawStars);
-}
-drawStars();
-
-// --- Hoa nhài rơi ---
-function dropPetal() {
-    const petal = document.createElement('div');
-    petal.className = 'petal';
-    petal.style.left = Math.random() * 100 + 'vw';
-    petal.style.animationDuration = (Math.random() * 5 + 5) + 's';
-    document.getElementById('petals').appendChild(petal);
-    setTimeout(() => petal.remove(), 10000);
-    setTimeout(dropPetal, 300);
-}
-dropPetal();
-</script>
-</body>
-</html>
+        to { text-shadow:

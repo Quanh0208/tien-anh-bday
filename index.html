@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday to Tien Anh</title>
+<style>
+html, body {
+    margin: 0; padding: 0; height: 100%;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #003f7f 0%, #001a33 70%);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; z-index: 0;
+}
+h1 {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 2.5em;
+    text-align: center;
+    text-shadow: 0 0 10px #9ed8ff, 0 0 20px #9ed8ff;
+    animation: glow 2s infinite alternate;
+    z-index: 2;
+    white-space: nowrap;
+}
+@keyframes glow {
+    from { text-shadow: 0 0 5px #9ed8ff, 0 0 10px #9ed8ff; }
+    to { text-shadow: 0 0 20px #fff, 0 0 40px #9ed8ff; }
+}
+#petals {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1;
+}
+.petal {
+    position: absolute;
+    width: 20px; height: 20px;
+    background: radial-gradient(circle at 40% 40%, #fff 0%, #f6faff 60%, #e0f4ff 100%);
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: fall linear forwards;
+}
+@keyframes fall {
+    to { transform: translateY(110vh) rotate(360deg); }
+}
+#musicBtn {
+    position: fixed; top: 20px; left: 20px; z-index: 3;
+    padding: 10px 15px;
+    background: rgba(255,255,255,0.8);
+    border: none; border-radius: 8px;
+    font-size: 16px; cursor: pointer;
+}
+</style>
+</head>
+<body>
+    <canvas id="stars"></canvas>
+    <h1 id="title">Happy Birthday to Tien Anh</h1>
+    <div id="petals"></div>
+    <audio id="bgm" src="iasmine.mp3" loop></audio>
+    <button id="musicBtn" style="display:none;">Bật nhạc 🎵</button>
+
+<script>
+// --- Nền sao + sao băng ---
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+let stars = Array.from({length:150}, () => ({
+    x: Math.random()*W,
+    y: Math.random()*H,
+    r: Math.random()*1.5,
+    o: Math.random()
+}));
+let streaks = [];
+function spawnStreak(){
+    streaks.push({
+        x: Math.random()*W, y: Math.random()*H*0.5,
+        len: Math.random()*80+50, speed: Math.random()*4+2, life: 1
+    });
+    setTimeout(spawnStreak, Math.random()*3000+2000);
+}
+spawnStreak();
+
+function drawStars(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#9ed8ff';
+    stars.forEach(s=>{
+        ctx.globalAlpha = s.o;
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fill();
+    });
+    streaks.forEach(s=>{
+        ctx.strokeStyle = `rgba(158,216,255,${s.life})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x - s.len, s.y + s.len*0.2);
+        ctx.stroke();
+        s.x += s.speed;
+        s.y -= s.speed*0.2;
+        s.life -= 0.01;
+    });
+    streaks = streaks.filter(s=>s.life>0);
+    requestAnimationFrame(drawStars);
+}
+drawStars();
+
+// --- Hoa nhài rơi ---
+function dropPetal(){
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.animationDuration = (Math.random()*5+5) + 's';
+    document.getElementById('petals').appendChild(p);
+    setTimeout(()=>p.remove(), 10000);
+    setTimeout(dropPetal, 300);
+}
+dropPetal();
+
+// --- Nhạc + nút bật ---
+const bgm = document.getElementById('bgm');
+const btn = document.getElementById('musicBtn');
+bgm.play().catch(()=>{
+    btn.style.display = 'block';
+});
+btn.onclick = () => {
+    bgm.play();
+    btn.remove();
+};
+
+// --- Chữ rung theo nhạc ---
+let ctxAudio, analyser, dataArray;
+function setupAnalyser(){
+    ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+    const src = ctxAudio.createMediaElementSource(bgm);
+    analyser = ctxAudio.createAnalyser();
+    analyser.fftSize = 256;
+    src.connect(analyser);
+    analyser.connect(ctxAudio.destination);
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    animateTitle();
+}
+function animateTitle(){
+    analyser.getByteFrequencyData(dataArray);
+    let sum = 0;
+    for(let i=0;i<20;i++) sum += dataArray[i];
+    const scale = 1 + sum/4000;
+    document.getElementById('title').style.transform =
+        `translate(-50%, -50%) scale(${scale})`;
+    requestAnimationFrame(animateTitle);
+}
+document.body.addEventListener('click', ()=>{
+    if(!ctxAudio) setupAnalyser();
+});
+</script>
+</body>
+</html>

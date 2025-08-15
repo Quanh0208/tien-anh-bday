@@ -58,8 +58,20 @@ h1 {
     <canvas id="stars"></canvas>
     <h1 id="title">Happy Birthday to Tien Anh</h1>
     <div id="petals"></div>
+
+    <!-- Nhạc chính -->
     <audio id="bgm" src="iasmine.mp3" loop></audio>
     <button id="musicBtn" style="display:none;">Bật nhạc 🎵</button>
+
+    <!-- Nhạc dự phòng YouTube ẩn -->
+    <iframe
+      width="0" height="0"
+      src="https://www.youtube.com/embed/lMsey7p11F8?autoplay=1&loop=1&playlist=lMsey7p11F8&mute=1"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen
+      style="display:none;">
+    </iframe>
 
 <script>
 // --- Nền sao + sao băng ---
@@ -162,13 +174,5 @@ document.body.addEventListener('click', ()=>{
     if(!ctxAudio) setupAnalyser();
 });
 </script>
-<iframe
-  width="0" height="0"
-  src="https://www.youtube.com/embed/lMsey7p11F8?autoplay=1&loop=1&playlist=lMsey7p11F8&mute=1"
-  frameborder="0"
-  allow="autoplay; encrypted-media"
-  allowfullscreen
-  style="display:none;">
-</iframe>
 </body>
 </html>

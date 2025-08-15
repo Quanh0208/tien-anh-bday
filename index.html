@@ -8,8 +8,8 @@
 html, body {
     margin: 0; padding: 0; height: 100%;
     overflow: hidden;
-    background: radial-gradient(circle at center, #003f7f 0%, #001a33 70%);
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background: radial-gradient(circle at center, #0d1b2a 0%, #001a33 80%);
+    font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
 }
 canvas {
     position: fixed; top: 0; left: 0;
@@ -19,13 +19,14 @@ h1 {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    color: white;
-    font-size: 2.5em;
+    color: #fff;
+    font-size: 3em;
     text-align: center;
+    line-height: 1.2;
     text-shadow: 0 0 10px #9ed8ff, 0 0 20px #9ed8ff;
     animation: glow 2s infinite alternate;
     z-index: 2;
-    white-space: nowrap;
+    white-space: pre-line;
 }
 @keyframes glow {
     from { text-shadow: 0 0 5px #9ed8ff, 0 0 10px #9ed8ff; }
@@ -56,7 +57,7 @@ h1 {
 </head>
 <body>
     <canvas id="stars"></canvas>
-    <h1 id="title">Happy Birthday to Tien Anh</h1>
+    <h1 id="title">Happy Birthday<br>to Tien Anh</h1>
     <div id="petals"></div>
 
     <!-- Nhạc chính -->
@@ -85,12 +86,22 @@ function resize(){
 resize();
 window.addEventListener('resize', resize);
 
-let stars = Array.from({length:150}, () => ({
+let stars = Array.from({length:200}, () => ({
     x: Math.random()*W,
     y: Math.random()*H,
     r: Math.random()*1.5,
     o: Math.random()
 }));
+
+// Tạo chòm sao thêm hiệu ứng kết nối
+let constellations = [];
+for(let i=0;i<50;i++){
+    const x = Math.random()*W;
+    const y = Math.random()*H*0.7;
+    const radius = Math.random()*2+1;
+    constellations.push({x,y,radius});
+}
+
 let streaks = [];
 function spawnStreak(){
     streaks.push({
@@ -103,6 +114,8 @@ spawnStreak();
 
 function drawStars(){
     ctx.clearRect(0,0,W,H);
+
+    // Vẽ sao nền
     ctx.fillStyle = '#9ed8ff';
     stars.forEach(s=>{
         ctx.globalAlpha = s.o;
@@ -110,6 +123,16 @@ function drawStars(){
         ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
         ctx.fill();
     });
+
+    // Vẽ chòm sao
+    ctx.fillStyle = '#ffd';
+    constellations.forEach(c=>{
+        ctx.beginPath();
+        ctx.arc(c.x,c.y,c.radius,0,Math.PI*2);
+        ctx.fill();
+    });
+
+    // Vẽ sao băng
     streaks.forEach(s=>{
         ctx.strokeStyle = `rgba(158,216,255,${s.life})`;
         ctx.lineWidth = 2;
@@ -141,9 +164,16 @@ dropPetal();
 // --- Nhạc + nút bật ---
 const bgm = document.getElementById('bgm');
 const btn = document.getElementById('musicBtn');
-bgm.play().catch(()=>{
-    btn.style.display = 'block';
+
+window.addEventListener('load', ()=>{
+    const playPromise = bgm.play();
+    if(playPromise !== undefined){
+        playPromise.catch(()=> {
+            btn.style.display = 'block';
+        });
+    }
 });
+
 btn.onclick = () => {
     bgm.play();
     btn.remove();
